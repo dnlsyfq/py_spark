@@ -1,4 +1,13 @@
+```
+import pyspark.sql.functions as F
 
+df = spark.read.table(<dataframe>)
+
+df
+  .filter(!col('id').isnull())
+  .withColumn('countryCode',lit('USA'))
+  .withColumnRenamed('geo','region')
+```
 
 ```
 raw_data = sc.textFile("daily_show.tsv")
