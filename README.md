@@ -1,3 +1,8 @@
+Pyspark
+```
+spark.catalog.listTables()
+```
+
 ```
 import pyspark.sql.functions as F
 
