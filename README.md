@@ -1,4 +1,43 @@
 Pyspark
+
+```
+from pyspark.sql import SparkSession
+my_spark = SparkSession.builder.getOrCreate() // create spark
+
+```
+
+* tables in catalog
+```
+# Print the tables in the catalog
+print(spark.catalog.listTables())
+```
+
+* spark.sql
+```
+spark.sql("""SELECT FROM """)
+```
+
+* spark dataframe to pandas
+```
+spark.sql(query).toPandas()
+```
+
+* pandas to spark dataframe
+```
+spark.createDataFrame(pandas)
+```
+
+* create spark dataframe to catalog or sql
+```
+spark_DF.createOrReplaceTempView('<sql name>')
+```
+
+* spark read csv
+```
+spark.read.csv(file_path, header=True)
+```
+
+
 ```
 spark.catalog.listTables()
 ```
