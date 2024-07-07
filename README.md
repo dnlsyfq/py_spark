@@ -38,9 +38,117 @@ spark.read.csv(file_path, header=True)
 ```
 
 
+* create column
+```
+df = df.withColumn("newCol", df.oldCol + 1)
+```
+
 ```
 spark.catalog.listTables()
 ```
+
+* spark filter
+```
+flights.filter("air_time > 120").show()
+flights.filter(flights.air_time > 120).show()
+```
+
+The difference between .select() and .withColumn() methods is that .select() returns only the columns you specify, while .withColumn() returns all the columns of the DataFrame in addition to the one you defined. It's often a good idea to drop columns you don't need at the beginning of an operation so that you're not dragging around extra data as you're wrangling. In this case, you would use .select() and not .withColumn().
+
+
+* spark select
+```
+# Select the first set of columns
+selected1 = flights.select("tailnum", "origin", "dest")
+
+# Select the second set of columns
+temp = flights.select(flights.origin, flights.dest, flights.carrier)
+
+# Define first filter
+filterA = flights.origin == "SEA"
+
+# Define second filter
+filterB = flights.dest == "PDX"
+
+# Filter the data, first by filterA then by filterB
+selected2 = temp.filter(filterA).filter(filterB)
+
+flights.select(flights.air_time/60)
+flights.select((flights.air_time/60).alias("duration_hrs"))
+flights.selectExpr("air_time/60 as duration_hrs")
+
+
+
+```
+
+* spark groupby
+```
+df.groupBy().min("col").show()
+
+# Find the shortest flight from PDX in terms of distance
+flights.filter(flights.origin == 'PDX').groupBy().min('distance').show()
+
+# Find the longest flight from SEA in terms of air time
+flights.filter(flights.origin == 'SEA').groupBy().max('air_time').show()
+
+# Average duration of Delta flights
+flights.filter(flights.carrier == "DL").filter(flights.origin == "SEA").groupBy().avg("air_time").show()
+
+# Total hours in the air
+flights.withColumn("duration_hrs", flights.air_time/60).groupBy().sum("duration_hrs").show()
+
+
+# Group by tailnum
+by_plane = flights.groupBy("tailnum")
+
+# Number of flights each plane made
+by_plane.count().show()
+
+# Group by origin
+by_origin = flights.groupBy("origin")
+
+# Average duration of flights from PDX and SEA
+by_origin.avg("air_time").show()
+
+# Import pyspark.sql.functions as F
+import pyspark.sql.functions as F
+
+# Group by month and dest
+by_month_dest = flights.groupBy('month','dest')
+
+# Average departure delay by month and destination
+by_month_dest.avg('dep_delay').show()
+
+# Standard deviation of departure delay
+by_month_dest.agg(F.stddev('dep_delay')).show()
+```
+
+* spark join
+```
+# Examine the data
+print(airports.show())
+
+# Rename the faa column
+airports = airports.withColumnRenamed('faa','dest')
+
+# Join the DataFrames
+flights_with_airports = flights.join(airports,on='dest',how='leftouter')
+
+# Examine the new DataFrame
+flights_with_airports.show()
+
+```
+
+* spark rename col
+```
+airports = airports.withColumnRenamed(old,new)
+airports = airports.withColumnRenamed('faa','dest')
+```
+
+
+---
+
+
 
 ```
 import pyspark.sql.functions as F
